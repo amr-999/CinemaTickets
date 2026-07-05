@@ -1,0 +1,102 @@
+@model DashboardVM
+@{ ViewData["Title"] = "Dashboard"; }
+
+<div class="row g-4 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card stat-movies">
+            <div class="stat-icon"><i class="fas fa-clapperboard"></i></div>
+            <div><div class="stat-value">@Model.TotalMovies</div><div class="stat-label">Total Movies</div></div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card stat-categories">
+            <div class="stat-icon"><i class="fas fa-tags"></i></div>
+            <div><div class="stat-value">@Model.TotalCategories</div><div class="stat-label">Categories</div></div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card stat-cinemas">
+            <div class="stat-icon"><i class="fas fa-building"></i></div>
+            <div><div class="stat-value">@Model.TotalCinemas</div><div class="stat-label">Cinemas</div></div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card stat-actors">
+            <div class="stat-icon"><i class="fas fa-user-tie"></i></div>
+            <div><div class="stat-value">@Model.TotalActors</div><div class="stat-label">Actors</div></div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-4">
+        <div class="card card-section h-100">
+            <div class="card-header-section"><i class="fas fa-chart-pie me-2 text-primary"></i>Status Breakdown</div>
+            <div class="card-body">
+                @{ int tot = Model.TotalMovies == 0 ? 1 : Model.TotalMovies; }
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span><span class="badge bg-success">Now Showing</span></span><strong>@Model.NowShowing</strong>
+                    </div>
+                    <div class="progress" style="height:8px">
+                        <div class="progress-bar bg-success" style="width:@((int)((double)Model.NowShowing/tot*100))%"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span><span class="badge bg-warning text-dark">Coming Soon</span></span><strong>@Model.ComingSoon</strong>
+                    </div>
+                    <div class="progress" style="height:8px">
+                        <div class="progress-bar bg-warning" style="width:@((int)((double)Model.ComingSoon/tot*100))%"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span><span class="badge bg-secondary">Ended</span></span><strong>@Model.Ended</strong>
+                    </div>
+                    <div class="progress" style="height:8px">
+                        <div class="progress-bar bg-secondary" style="width:@((int)((double)Model.Ended/tot*100))%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-8">
+        <div class="card card-section">
+            <div class="card-header-section d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-clock-rotate-left me-2 text-primary"></i>Recent Movies</span>
+                <a asp-area="Admin" asp-controller="Movie" asp-action="Create" class="btn btn-sm btn-primary">
+                    <i class="fas fa-plus me-1"></i>Add Movie
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr><th>Movie</th><th>Cinema</th><th>Price</th><th>Status</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var m in Model.RecentMovies)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@m.Name</td>
+                                <td class="text-muted">@m.Cinema?.Name</td>
+                                <td class="text-success fw-semibold">$@m.Price.ToString("0.00")</td>
+                                <td><span class="@m.Status.ToBadge()">@m.Status.ToDisplay()</span></td>
+                                <td>
+                                    <a asp-area="Admin" asp-controller="Movie" asp-action="Details"
+                                       asp-route-id="@m.Id" class="btn btn-xs btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.RecentMovies.Any())
+                        {
+                            <tr><td colspan="5" class="text-center text-muted py-4">No movies yet.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

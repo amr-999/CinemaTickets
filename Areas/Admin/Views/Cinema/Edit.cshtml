@@ -1,0 +1,37 @@
+@model CinemaVM
+@{ ViewData["Title"] = "Edit Cinema"; }
+<div class="row justify-content-center"><div class="col-lg-7">
+    <div class="card card-section">
+        <div class="card-header-section"><i class="fas fa-pen me-2 text-warning"></i>Edit Cinema</div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input asp-for="Id" type="hidden" />
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-semibold"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Location" class="form-label fw-semibold"></label>
+                    <input asp-for="Location" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Current Image</label><br />
+                    @if (!string.IsNullOrEmpty(Model.Img))
+                    { <img src="@Model.Img" class="img-current mb-2" /> }
+                    else { <span class="text-muted small d-block mb-2">No image uploaded</span> }
+                    <label asp-for="ImgFile" class="form-label fw-semibold">Replace Image</label>
+                    <input asp-for="ImgFile" type="file" class="form-control" accept="image/*"
+                           onchange="previewImage(this,'imgPreview')" />
+                    <img id="imgPreview" src="#" class="img-preview mt-2" style="display:none" />
+                </div>
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-warning"><i class="fas fa-save me-1"></i>Update</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div></div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

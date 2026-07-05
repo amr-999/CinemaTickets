@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Configuration Name="Debug" />
+    <Configuration Name="Release" />
+  </Configurations>
+  <Project Path="CinemaTickets.csproj" />
+</Solution>

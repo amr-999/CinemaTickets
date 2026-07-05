@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] – CinemaAdmin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <link href="~/css/admin.css" rel="stylesheet" />
+</head>
+<body>
+<div class="admin-wrapper">
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-film"></i>
+            <span class="brand-text">CinemaAdmin</span>
+        </div>
+        <ul class="sidebar-nav">
+            <li class="nav-label">MAIN</li>
+            <li>
+                <a asp-area="Admin" asp-controller="Home" asp-action="Index"
+                   class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString()=="Home"?"active":"")">
+                    <i class="fas fa-gauge-high"></i><span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-label">MANAGE</li>
+            <li>
+                <a asp-area="Admin" asp-controller="Movie" asp-action="Index"
+                   class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString()=="Movie"?"active":"")">
+                    <i class="fas fa-clapperboard"></i><span>Movies</span>
+                </a>
+            </li>
+            <li>
+                <a asp-area="Admin" asp-controller="Category" asp-action="Index"
+                   class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString()=="Category"?"active":"")">
+                    <i class="fas fa-tags"></i><span>Categories</span>
+                </a>
+            </li>
+            <li class="nav-label">VENUES</li>
+            <li>
+                <a asp-area="Admin" asp-controller="Cinema" asp-action="Index"
+                   class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString()=="Cinema"?"active":"")">
+                    <i class="fas fa-building"></i><span>Cinemas</span>
+                </a>
+            </li>
+            <li>
+                <a asp-area="Admin" asp-controller="Hall" asp-action="Index"
+                   class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString()=="Hall"?"active":"")">
+                    <i class="fas fa-door-open"></i><span>Halls</span>
+                </a>
+            </li>
+            <li class="nav-label">PEOPLE</li>
+            <li>
+                <a asp-area="Admin" asp-controller="Actor" asp-action="Index"
+                   class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString()=="Actor"?"active":"")">
+                    <i class="fas fa-user-tie"></i><span>Actors</span>
+                </a>
+            </li>
+            <li class="nav-label">SITE</li>
+            <li>
+                <a asp-area="Customer" asp-controller="Home" asp-action="Index"
+                   class="sidebar-link">
+                    <i class="fas fa-globe"></i><span>Customer Site</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="main-area">
+        <header class="topbar">
+            <button class="btn-icon" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+            <h1 class="page-title">@ViewData["Title"]</h1>
+            <div class="topbar-right">
+                <span class="topbar-badge"><i class="fas fa-circle-dot text-success me-1"></i>Live</span>
+            </div>
+        </header>
+
+        <div class="flash-container">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show shadow-sm mb-0" role="alert">
+                    <i class="fas fa-circle-check me-2"></i>@TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-0" role="alert">
+                    <i class="fas fa-circle-exclamation me-2"></i>@TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+        </div>
+
+        <main class="page-content">@RenderBody()</main>
+    </div>
+</div>
+
+<!-- Shared Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-triangle-exclamation me-2"></i>Confirm Delete</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body fs-6" id="deleteModalBody">Are you sure?</div>
+            <div class="modal-footer border-0">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post">
+                    @Html.AntiForgeryToken()
+                    <button class="btn btn-danger"><i class="fas fa-trash me-1"></i>Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.21.0/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/js/admin.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

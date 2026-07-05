@@ -1,0 +1,200 @@
+@model MovieVM
+@{ ViewData["Title"] = "Edit Movie"; }
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden" />
+    <div class="row g-4">
+
+        <!-- LEFT -->
+        <div class="col-lg-8">
+            <div class="card card-section mb-4">
+                <div class="card-header-section"><i class="fas fa-pen me-2 text-warning"></i>Movie Details</div>
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="display:none"></div>
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label fw-semibold"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Price" class="form-label fw-semibold"></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="Price" class="form-control" type="number" step="0.01" min="0.01" />
+                            </div>
+                            <span asp-validation-for="Price" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Status" class="form-label fw-semibold"></label>
+                            <select asp-for="Status" class="form-select"
+                                    asp-items="Html.GetEnumSelectList<MovieStatus>()"></select>
+                            <span asp-validation-for="Status" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="DateTime" class="form-label fw-semibold"></label>
+                            <input asp-for="DateTime" type="datetime-local" class="form-control"
+                                   value="@Model.DateTime.ToString("yyyy-MM-ddTHH:mm")" />
+                            <span asp-validation-for="DateTime" class="text-danger small"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CategoryId" class="form-label fw-semibold"></label>
+                            <select asp-for="CategoryId" class="form-select" asp-items="Model.CategoryList">
+                                <option value="">-- Category --</option>
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CinemaId" class="form-label fw-semibold"></label>
+                            <select asp-for="CinemaId" class="form-select" asp-items="Model.CinemaList">
+                                <option value="">-- Cinema --</option>
+                            </select>
+                            <span asp-validation-for="CinemaId" class="text-danger small"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="HallId" class="form-label fw-semibold"></label>
+                            <select asp-for="HallId" class="form-select" asp-items="Model.HallList">
+                                <option value="">-- Hall (optional) --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="AvailableSeats" class="form-label fw-semibold"></label>
+                            <input asp-for="AvailableSeats" class="form-control" type="number" min="0" />
+                            <span asp-validation-for="AvailableSeats" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actors -->
+            <div class="card card-section">
+                <div class="card-header-section"><i class="fas fa-users me-2 text-primary"></i>Cast</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        @foreach (var a in Model.ActorList)
+                        {
+                            <div class="col-6 col-sm-4 col-md-3">
+                                <label class="actor-check-card w-100 @(a.IsSelected ? "selected" : "")">
+                                    <input type="checkbox" name="SelectedActorIds" value="@a.Id"
+                                           class="actor-checkbox" @(a.IsSelected ? "checked" : "") />
+                                    @if (!string.IsNullOrEmpty(a.Img))
+                                    { <img src="@a.Img" class="actor-card-img" alt="@a.Name" /> }
+                                    else
+                                    { <div class="actor-card-placeholder"><i class="fas fa-user fa-2x"></i></div> }
+                                    <div class="actor-card-name">@a.Name</div>
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="col-lg-4">
+
+            <!-- Main Image -->
+            <div class="card card-section mb-4">
+                <div class="card-header-section"><i class="fas fa-image me-2 text-primary"></i>Main Poster</div>
+                <div class="card-body text-center">
+                    @if (!string.IsNullOrEmpty(Model.MainImg))
+                    {
+                        <img src="@Model.MainImg" class="main-poster-preview mb-3" id="mainImgBox" />
+                    }
+                    else
+                    {
+                        <div class="main-img-preview" id="mainImgBox">
+                            <i class="fas fa-film fa-3x text-muted"></i>
+                        </div>
+                    }
+                    <label class="form-label fw-semibold mt-2 d-block text-start">Replace Poster</label>
+                    <input asp-for="MainImgFile" type="file" class="form-control"
+                           accept="image/*" onchange="replaceMainImg(this)" />
+                </div>
+            </div>
+
+            <!-- Existing Sub Images -->
+            @if (Model.ExistingSubImages.Any())
+            {
+                <div class="card card-section mb-4">
+                    <div class="card-header-section">
+                        <i class="fas fa-images me-2 text-primary"></i>Gallery
+                        <small class="text-muted ms-1">(check to remove)</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-2">
+                            @foreach (var si in Model.ExistingSubImages)
+                            {
+                                <div class="col-6">
+                                    <div class="sub-img-remove-card">
+                                        <img src="@si.Img" class="sub-img-preview" />
+                                        <label class="remove-label">
+                                            <input type="checkbox" name="SubImageIdsToRemove"
+                                                   value="@si.Id" /> Remove
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Add New Sub Images -->
+            <div class="card card-section mb-4">
+                <div class="card-header-section"><i class="fas fa-plus me-2 text-primary"></i>Add Sub Images</div>
+                <div class="card-body">
+                    <input asp-for="SubImgFiles" type="file" class="form-control"
+                           accept="image/*" multiple onchange="previewNewSubs(this)" />
+                    <div id="newSubPreviews" class="row g-2 mt-2"></div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-warning btn-lg">
+                    <i class="fas fa-save me-2"></i>Update Movie
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+<script>
+function replaceMainImg(input) {
+    if (!input.files || !input.files[0]) return;
+    const r = new FileReader();
+    r.onload = e => {
+        const box = document.getElementById('mainImgBox');
+        box.src   = e.target.result;
+        box.className = 'main-poster-preview mb-3';
+    };
+    r.readAsDataURL(input.files[0]);
+}
+function previewNewSubs(input) {
+    const c = document.getElementById('newSubPreviews'); c.innerHTML = '';
+    Array.from(input.files || []).forEach(f => {
+        const r = new FileReader();
+        r.onload = e => c.innerHTML +=
+            '<div class="col-4"><img src="' + e.target.result + '" class="sub-img-preview" /></div>';
+        r.readAsDataURL(f);
+    });
+}
+document.querySelectorAll('.actor-checkbox').forEach(cb => {
+    cb.addEventListener('change', function () {
+        this.closest('.actor-check-card').classList.toggle('selected', this.checked);
+    });
+});
+</script>}

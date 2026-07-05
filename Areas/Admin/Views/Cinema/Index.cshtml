@@ -1,0 +1,54 @@
+@model CinemaTickets.Helpers.PaginatedList<CinemaTickets.Models.Cinema>
+@{ ViewData["Title"] = "Cinemas"; }
+<div class="card card-section mb-3">
+    <div class="card-body py-2">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-md-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" name="search" class="form-control" placeholder="Search cinemas…" value="@ViewBag.Search" />
+                </div>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+                <a asp-action="Index" class="btn btn-sm btn-outline-secondary ms-1">Clear</a>
+            </div>
+            <div class="col-auto ms-auto">
+                <a asp-action="Create" class="btn btn-sm btn-primary"><i class="fas fa-plus me-1"></i>New Cinema</a>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row g-4">
+    @foreach (var c in Model.Items)
+    {
+        <div class="col-sm-6 col-xl-4">
+            <div class="card h-100 shadow-sm border-0">
+                @if (!string.IsNullOrEmpty(c.Img)) { <img src="@c.Img" class="entity-thumb" alt="@c.Name" /> }
+                else { <div class="entity-thumb-placeholder"><i class="fas fa-building"></i></div> }
+                <div class="card-body">
+                    <h5 class="card-title mb-1">@c.Name</h5>
+                    @if (!string.IsNullOrEmpty(c.Location))
+                    { <p class="text-muted small mb-0"><i class="fas fa-location-dot me-1"></i>@c.Location</p> }
+                </div>
+                <div class="card-footer bg-transparent d-flex gap-2">
+                    <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-sm btn-outline-warning flex-fill"><i class="fas fa-pen me-1"></i>Edit</a>
+                    <button class="btn btn-sm btn-outline-danger flex-fill"
+                            onclick="confirmDelete('@c.Id','@c.Name','Cinema')">
+                        <i class="fas fa-trash me-1"></i>Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+    @if (!Model.Items.Any()) { <div class="col-12 text-center text-muted py-5">No cinemas found.</div> }
+</div>
+<div class="mt-3"><partial name="_Pagination" /></div>
+@section Scripts {
+<script>
+function confirmDelete(id, name, type) {
+    document.getElementById('deleteModalBody').textContent = 'Delete ' + type + ': "' + name + '"?';
+    document.getElementById('deleteForm').action = '/Admin/Cinema/Delete/' + id;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>}
